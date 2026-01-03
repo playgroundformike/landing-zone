@@ -18,9 +18,14 @@ terraform {
 }
 
 inputs = {
+
   shared_services_account_name  = "Shared-Services"
   shared_services_account_email = "aws.michael.aduayi+sharedservices@gmail.com"
 
   workload_account_name  = "Workload-Dev"
   workload_account_email = "aws.michael.aduayi+workload@gmail.com"
+  
+  log_archive_account_name  = "Logging"
+  log_archive_account_email = "aws.michael.aduayi+logging@gmail.com"
+
 }

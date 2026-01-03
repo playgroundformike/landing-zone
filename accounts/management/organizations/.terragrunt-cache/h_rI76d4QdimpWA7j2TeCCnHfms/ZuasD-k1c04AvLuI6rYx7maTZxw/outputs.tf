@@ -65,15 +65,15 @@ output "workload_account_arn" {
   value       = aws_organizations_account.workload.arn
 }
 
-# output "production_account_id" {
-#   description = "The ID of the Workload account"
-#   value       = aws_organizations_account.production.id
-# }
+output "log_archive_account_id" {
+  description = "The ID of the Logging account"
+  value       = aws_organizations_account.log_archive.id
+}
 
-# output "production_account_arn" {
-#   description = "The ARN of the Workload account"
-#   value       = aws_organizations_account.production.arn
-# }
+output "log_archive_account_arn" {
+  description = "The ARN of the Logging account"
+  value       = aws_organizations_account.log_archive.arn
+}
 #------------------------------------------------------------------------------
 # Cross-Account Role ARNs (for assuming into member accounts)
 #------------------------------------------------------------------------------
@@ -86,10 +86,11 @@ output "workload_assume_role_arn" {
   description = "ARN of the role to assume into Workload account"
   value       = "arn:aws:iam::${aws_organizations_account.workload.id}:role/OrganizationAccountAccessRole"
 }
-# output "production_assume_role_arn" {
-#   description = "ARN of the role to assume into Workload account"
-#   value       = "arn:aws:iam::${aws_organizations_account.production.id}:role/OrganizationAccountAccessRole"
-# }
+
+output "log_archive_assume_role_arn" {
+  description = "ARN of the role to assume into Logging account"
+  value       = "arn:aws:iam::${aws_organizations_account.log_archive.id}:role/OrganizationAccountAccessRole"
+}
 
 #------------------------------------------------------------------------------
 # Summary (for easy reference)
@@ -113,11 +114,12 @@ output "account_summary" {
       ou          = "Workloads"
       assume_role = "arn:aws:iam::${aws_organizations_account.workload.id}:role/OrganizationAccountAccessRole"
     }
-    # production = {
-    #   id          = aws_organizations_account.production.id
-    #   name        = aws_organizations_account.production.name
-    #   ou          = "Workloads"
-    #   assume_role = "arn:aws:iam::${aws_organizations_account.production.id}:role/OrganizationAccountAccessRole"
-    # }
+    log_archive = {
+      id          = aws_organizations_account.log_archive.id
+      name        = aws_organizations_account.log_archive.name
+      ou          = "Security"
+      assume_role = "arn:aws:iam::${aws_organizations_account.log_archive.id}:role/OrganizationAccountAccessRole"
+    }
+
   }
 }
