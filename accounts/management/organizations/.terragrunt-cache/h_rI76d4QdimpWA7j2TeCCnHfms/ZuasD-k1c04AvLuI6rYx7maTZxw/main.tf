@@ -127,3 +127,12 @@ resource "aws_organizations_account" "log_archive" {
     ignore_changes = [email]
   }
 }
+
+
+#------------------------------------------------------------------------------
+# Delegated Administrators
+#------------------------------------------------------------------------------
+resource "aws_organizations_delegated_administrator" "cloudtrail" {
+  account_id        = aws_organizations_account.log_archive.id
+  service_principal = "cloudtrail.amazonaws.com"
+}
