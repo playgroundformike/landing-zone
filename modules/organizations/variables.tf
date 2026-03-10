@@ -59,18 +59,18 @@ variable "workload_account_email" {
 #------------------------------------------------------------------------------
 # Log Archive Account
 #------------------------------------------------------------------------------
-variable "workload_account_name" {
-  description = "Name for the Workload account"
+variable "log_archive_account_name" {
+  description = "Name for the logging account"
   type        = string
-  default     = "Workload-Dev"
+  default     = "Logging"
 }
 
-variable "workload_account_email" {
-  description = "Email for the Workload account (must be unique)"
+variable "log_archive_account_email" {
+  description = "Email for the logging account (must be unique)"
   type        = string
 
   validation {
-    condition     = can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", var.workload_account_email))
+    condition     = can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", var.log_archive_account_email))
     error_message = "Must be a valid email address."
   }
 }

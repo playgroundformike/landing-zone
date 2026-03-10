@@ -18,6 +18,7 @@ dependency "transit_gateway" {
   mock_outputs_allowed_terraform_commands = ["validate", "plan"]
 }
 
+
 # Override provider to assume role into Shared Services account
 generate "provider_override" {
   path      = "provider_override.tf"
@@ -54,4 +55,17 @@ inputs = {
 
   # NAT Gateway for private subnet internet access
   create_nat_gateway = true
+
+ flow_logs_bucket_arn = dependency.log_archive.outputs.flow_logs_bucket_arn
 }
+
+dependency "log_archive" {
+  config_path = "../../log-archive/cloudtrail"
+
+  mock_outputs = {
+    flow_logs_bucket_arn = "arn:aws:s3:::mock-bucket"
+  }
+  mock_outputs_allowed_terraform_commands = ["validate", "plan"]
+}
+
+ 

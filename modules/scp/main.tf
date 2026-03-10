@@ -187,7 +187,8 @@ resource "aws_organizations_policy" "deny_root_user" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid = "DenyRootUser"
+        Sid    = "DenyRootUser"
+        Effect = "Deny"
         NotAction = [
           "aws-portal:*",
           "budgets:*"

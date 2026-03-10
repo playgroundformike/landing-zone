@@ -201,3 +201,19 @@ resource "aws_route" "tgw_to_nat" {
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = aws_nat_gateway.main[0].id
 }
+
+
+#------------------------------------------------------------------------------
+# VPC Flow Logs
+#------------------------------------------------------------------------------
+resource "aws_flow_log" "main" {
+  count                = var.flow_logs_bucket_arn != "" ? 1 : 0
+  log_destination      = var.flow_logs_bucket_arn
+  log_destination_type = "s3"
+  traffic_type         = "ALL"
+  vpc_id               = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.project_name}-flow-log"
+  }
+}

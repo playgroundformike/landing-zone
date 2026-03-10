@@ -59,4 +59,17 @@ inputs = {
 
   # No NAT - use centralized egress through Shared Services if needed
   create_nat_gateway = false
+    flow_logs_bucket_arn = dependency.log_archive.outputs.flow_logs_bucket_arn
 }
+
+
+dependency "log_archive" {
+  config_path = "../../log-archive/cloudtrail"
+
+  mock_outputs = {
+    flow_logs_bucket_arn = "arn:aws:s3:::mock-bucket"
+  }
+  mock_outputs_allowed_terraform_commands = ["validate", "plan"]
+}
+
+ 

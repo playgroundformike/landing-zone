@@ -7,15 +7,15 @@
 resource "aws_organizations_organization" "org" {
 
   #  pre-authorizes AWS services to work across your entire organization
-
-
-
-
+  #  needed for account delegation for services.
   aws_service_access_principals = [
-    "cloudtrail.amazonaws.com", # organization wide audit trail
-    "config.amazonaws.com",     # organization wide compliance rules
-    "sso.amazonaws.com",        # organization wide single sign-on
-    "ram.amazonaws.com",        # For Transit Gateway sharing
+    "cloudtrail.amazonaws.com",  # organization wide audit trail
+    "config.amazonaws.com",      # organization wide compliance rules
+    "sso.amazonaws.com",         # organization wide single sign-on
+    "ram.amazonaws.com",         # TGW sharing
+    "securityhub.amazonaws.com", # organization wide security hub  
+    "guardduty.amazonaws.com",
+    "malware-protection.guardduty.amazonaws.com"
   ]
 
   feature_set = "ALL" # Shared billing & Full features: SCPs, Tag Policies, RAM sharing, delegated admin
@@ -30,6 +30,7 @@ resource "aws_organizations_organization" "org" {
 
 # This is a one-time enablement that tells RAM "yes, I allow sharing resources with my organization members."
 resource "aws_ram_sharing_with_organization" "enable" {}
+
 
 #------------------------------------------------------------------------------
 # Organizational Units - OUs let you apply policies to groups of accounts 
@@ -127,3 +128,64 @@ resource "aws_organizations_account" "log_archive" {
     ignore_changes = [email]
   }
 }
+
+
+#------------------------------------------------------------------------------
+# Cloud Trail Delegated Administrators
+#------------------------------------------------------------------------------
+resource "aws_organizations_delegated_administrator" "cloudtrail" {
+  account_id        = aws_organizations_account.log_archive.id
+  service_principal = "cloudtrail.amazonaws.com"
+}
+
+
+#------------------------------------------------------------------------------
+# Security Hub Delegated Administrator
+#------------------------------------------------------------------------------
+resource "aws_organizations_delegated_administrator" "securityhub" {
+  account_id        = aws_organizations_account.log_archive.id
+  service_principal = "securityhub.amazonaws.com"
+}
+
+#------------------------------------------------------------------------------
+# Security Hub - Designate Log Archive as Admin
+#------------------------------------------------------------------------------
+resource "aws_securityhub_account" "management" {
+  # Enable Security Hub in management account first
+}
+
+resource "aws_securityhub_organization_admin_account" "log_archive" {
+  admin_account_id = aws_organizations_account.log_archive.id
+
+  depends_on = [
+    aws_securityhub_account.management,
+    aws_organizations_delegated_administrator.securityhub
+  ]
+}
+
+#------------------------------------------------------------------------------
+# GuardDuty Delegated Administrator
+#------------------------------------------------------------------------------
+resource "aws_organizations_delegated_administrator" "guardduty" {
+  account_id        = aws_organizations_account.log_archive.id
+  service_principal = "guardduty.amazonaws.com"
+}
+
+#------------------------------------------------------------------------------
+# GuardDuty - Designate Log Archive as Admin
+#------------------------------------------------------------------------------
+resource "aws_guardduty_detector" "management" {
+  enable = true
+}
+
+resource "aws_guardduty_organization_admin_account" "log_archive" {
+  admin_account_id = aws_organizations_account.log_archive.id
+
+  depends_on = [
+    aws_guardduty_detector.management,
+    aws_organizations_delegated_administrator.guardduty
+  ]
+}
+
+
+ 

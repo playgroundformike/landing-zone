@@ -70,3 +70,10 @@ variable "create_nat_gateway" {
   type        = bool
   default     = false
 }
+
+
+variable "flow_logs_bucket_arn" {
+  description = "ARN of S3 bucket for VPC Flow Logs (empty to disable)"
+  type        = string
+  default     = ""
+}

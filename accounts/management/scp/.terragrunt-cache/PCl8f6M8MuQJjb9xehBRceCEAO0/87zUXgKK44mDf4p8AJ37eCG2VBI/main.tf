@@ -182,12 +182,17 @@ resource "aws_organizations_policy" "deny_root_user" {
   description = "Prevents root user from performing actions in member accounts"
   type        = "SERVICE_CONTROL_POLICY"
 
+  # Deny + NotAction
   content = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Sid      = "DenyRootUser"
-        Effect   = "Deny"
+        Sid    = "DenyRootUser"
+        Effect = "Deny"
+        NotAction = [
+          "aws-portal:*",
+          "budgets:*"
+        ]
         Action   = "*"
         Resource = "*"
         Condition = {
